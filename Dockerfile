@@ -50,7 +50,7 @@ FROM runtime AS test
 USER root
 COPY requirements-dev.txt requirements.txt ./
 RUN /opt/venv/bin/pip install --no-cache-dir -r requirements-dev.txt
-COPY --chown=aceest:aceest pytest.ini ./
+COPY --chown=aceest:aceest pytest.ini .flake8 ./
 COPY --chown=aceest:aceest tests ./tests
 
 USER aceest
