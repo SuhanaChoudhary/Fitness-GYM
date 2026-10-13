@@ -92,7 +92,7 @@ def seed_admin(db: sqlite3.Connection) -> None:
     username = os.environ.get("ACEEST_ADMIN_USER", "admin")
     password = os.environ.get("ACEEST_ADMIN_PASSWORD", "ChangeMe123!")
     db.execute(
-        "INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)",
+        "INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)",
         # pbkdf2 keeps the image portable; scrypt needs an OpenSSL build that
         # is not present on every Linux/CI runner used by this pipeline.
         (username, generate_password_hash(password, method="pbkdf2:sha256"), "Admin"),
