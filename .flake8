@@ -1,0 +1,12 @@
+[flake8]
+max-line-length = 110
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    build,
+    dist,
+    The code versions for DevOps Assignment
+per-file-ignores =
+    tests/conftest.py:E402
