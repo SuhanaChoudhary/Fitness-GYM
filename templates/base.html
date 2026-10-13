@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}ACEest Fitness &amp; Gym{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">ACEest<span class="brand-accent">Fitness &amp; Gym</span></span>
+    {% block topbar %}{% endblock %}
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+  <footer class="footer">ACEest Fitness &amp; Gym &middot; DevOps reference deployment</footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

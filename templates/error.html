@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} &middot; ACEest Fitness{% endblock %}
+{% block content %}
+<section class="login-wrap">
+  <div class="card">
+    <h1>{{ code }}</h1>
+    <p>{{ message }}</p>
+    <a class="link" href="{{ url_for('index') }}">Back to the dashboard</a>
+  </div>
+</section>
+{% endblock %}
