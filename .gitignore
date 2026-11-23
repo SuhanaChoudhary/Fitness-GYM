@@ -7,6 +7,8 @@ env/
 .coverage
 coverage.xml
 htmlcov/
+reports/
+.scannerwork/
 *.db
 *.sqlite3
 .DS_Store
