@@ -276,3 +276,61 @@ All `/api/*` routes return `401 {"error": "Authentication required"}` when unaut
 * Server-side validation on all write endpoints (ranges, enums, date formats).
 * The dashboard renders API data with `textContent`, avoiding HTML injection.
 * The container runs as a non-root user with no build toolchain present.
+
+---
+
+## 9. Extended CI/CD assignment workflow
+
+The assignment-two delivery path adds SonarQube enforcement, retained build artifacts, versioned
+registry publication, and Kubernetes progressive delivery to the original CI foundation.
+
+### Jenkins parameters and credentials
+
+The `Jenkinsfile` polls Git every five minutes and exposes these release controls:
+
+| Parameter | Purpose |
+| --- | --- |
+| `RUN_SONARQUBE` | Run analysis and stop on a failed SonarQube Quality Gate |
+| `PUBLISH_IMAGE` | Push release, Git-SHA, and `latest` tags to the configured registry |
+| `REGISTRY_HOST` / `IMAGE_REPOSITORY` | Select Docker Hub, Quay, or another OCI repository |
+| `RELEASE_VERSION` | Prefix for the immutable `version.build-number` tag |
+| `DEPLOY_STRATEGY` | Select `rolling`, `blue-green`, `canary`, `shadow`, or `ab` |
+| `BASELINE_IMAGE` | Stable image used beside the candidate in progressive deployments |
+
+Configure these Jenkins credentials before enabling the external stages:
+
+| Credential ID | Jenkins type | Use |
+| --- | --- | --- |
+| `container-registry-credentials` | Username with password/token | Registry login |
+| `aceest-secret-key` | Secret text | Flask session signing |
+| `aceest-admin-password` | Secret text | Bootstrap administrator |
+
+Install **SonarQube Scanner for Jenkins**, register a server named `ACEest SonarQube`, and register
+a SonarScanner CLI tool named `SonarScanner`. Configure the SonarQube webhook as
+`http://<jenkins-host>:8080/sonarqube-webhook/`; the trailing slash is required by the integration.
+
+For a local SonarQube demonstration:
+
+```bash
+docker compose -f docker-compose.sonarqube.yml up -d
+```
+
+Open <http://localhost:9000>, create an analysis token, store it in the Jenkins SonarQube server
+configuration, and run **Build with Parameters** with `RUN_SONARQUBE=true`. Coverage is read from
+`reports/coverage.xml`, while Jenkins archives both coverage and JUnit XML evidence.
+
+### Registry and Kubernetes release
+
+Create a public Docker Hub repository, add its access token under
+`container-registry-credentials`, replace the default `IMAGE_REPOSITORY`, and run Jenkins with
+`PUBLISH_IMAGE=true`. A build publishes tags similar to:
+
+```text
+docker.io/your-user/aceest-fitness:v1.0.12
+docker.io/your-user/aceest-fitness:a1b2c3d4e5f6
+docker.io/your-user/aceest-fitness:latest
+```
+
+The Jenkins agent needs a working `kubectl` context and the two application secret credentials to
+run the optional deployment stage. Complete Minikube commands, strategy behavior, promotion,
+endpoint checks, and rollback procedures are in [the Kubernetes guide](k8s/README.md).
